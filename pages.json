@@ -1,0 +1,51 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/login/index",
+			"name": "login",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"globalStyle": {
+		"usingComponents": {
+			"van-button": "/wxcomponents/vant-weapp/button/index",
+			"van-tab": "/wxcomponents/vant-weapp/tab/index",
+			"van-tabs": "/wxcomponents/vant-weapp/tabs/index",
+			"van-field": "/wxcomponents/vant-weapp/field/index",
+			"van-icon": "/wxcomponents/vant-weapp/icon/index",
+			"van-cell": "/wxcomponents/vant-weapp/cell/index",
+			"van-popup": "/wxcomponents/vant-weapp/popup/index",
+			"van-action-sheet": "/wxcomponents/vant-weapp/action-sheet/index",
+			"van-calendar": "/wxcomponents/vant-weapp/calendar/index",
+			"van-checkbox": "/wxcomponents/vant-weapp/checkbox/index",
+			"van-datetime-picker": "/wxcomponents/vant-weapp/datetime-picker/index",
+			"van-dialog": "/wxcomponents/vant-weapp/dialog/index",
+			"van-nav-bar": "/wxcomponents/vant-weapp/nav-bar/index",
+			"van-dropdown-item": "/wxcomponents/vant-weapp/dropdown-item/index",
+			"van-dropdown-menu": "/wxcomponents/vant-weapp/dropdown-menu/index",
+			"van-count-down": "/wxcomponents/vant-weapp/count-down/index",
+			"van-toast": "/wxcomponents/vant-weapp/toast/index",
+			"van-tabbar": "/wxcomponents/vant-weapp/tabbar/index",
+			"van-tabbar-item": "/wxcomponents/vant-weapp/tabbar-item/index",
+			"van-panel": "/wxcomponents/vant-weapp/panel/index",
+			"van-tag": "/wxcomponents/vant-weapp/tag/index",
+			"van-grid": "/wxcomponents/vant-weapp/grid/index",
+			"van-grid-item": "/wxcomponents/vant-weapp/grid-item/index",
+			"van-loading": "/wxcomponents/vant-weapp/loading/index",
+			"van-divider": "/wxcomponents/vant-weapp/divider/index",
+			"van-notify": "/wxcomponents/vant-weapp/notify/index",
+			"van-empty": "/wxcomponents/vant-weapp/empty/index",
+			"van-search": "/wxcomponents/vant-weapp/search/index",
+			"van-slider": "/wxcomponents/vant-weapp/slider/index"
+		},
+		"pageOrientation": "portrait",
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "#EEA9B8",
+		"backgroundColor": "#F5F7FA",
+		"enablePullDownRefresh": true
+	},
+	"uniIdRouter": {}
+}

@@ -1,0 +1,20 @@
+# Mac
+.DS_Store
+.hbuilderx/
+**/.DS_Store
+
+# vim/vi
+*.swp
+
+# JavaScript
+node_modules/
+.node_modules/
+.eslintcache
+unpackage/dist/build/
+unpackage/dist/dev/
+
+# python
+*.pyc
+
+# Node.js
+node_modules/
