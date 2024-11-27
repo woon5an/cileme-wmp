@@ -1,11 +1,27 @@
 <template>
 	<view class="login">
-		
+	<swiper interval="2000" indicator-dots="true" autoplay="true" circular="true">
+		<swiper-item>
+		  <image mode="scaleToFill" :src="loginBg1"></image>
+		</swiper-item>
+		<swiper-item class="cri"> 
+		  <image mode="scaleToFill" :src="loginBg2"></image>
+		</swiper-item>
+		<swiper-item>
+			<image mode="scaleToFill" :src="loginBg3"></image>
+		</swiper-item>
+	</swiper>
 	</view>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, reactive } from "vue"
+import mixins from './mixins/generateImagesUrl.js'
+	let {
+		loginBg1,
+		loginBg2,
+		loginBg3
+	} = mixins()
 	const title = ref('test')
 </script>
 
@@ -18,7 +34,7 @@ import { ref } from "vue"
 	justify-content:flex-end;
 }
 .login:before{
-	background-image:$login-bg;
+	background-image:$login-bg1;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
