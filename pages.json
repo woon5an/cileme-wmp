@@ -1,11 +1,35 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/login/index",
-			"name": "login",
+			"path": "pages/home/index",
+			"name": "home",
 			"style": {
 				"enablePullDownRefresh": false,
 				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/todo/index",
+			"name": "todo",
+			"meta": {
+				"name": "toDoList",
+				"roles": []
+			},
+			"style": {
+				"navigationBarTitleText": "今日任务",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/summary/index",
+			"name": "summary",
+			"meta": {
+				"name": "summary",
+				"roles": []
+			},
+			"style": {
+				"navigationBarTitleText": "汇总",
+				"enablePullDownRefresh": true
 			}
 		}
 	],
@@ -15,7 +39,8 @@
 			"van-tab": "/wxcomponents/vant-weapp/tab/index",
 			"van-tabs": "/wxcomponents/vant-weapp/tabs/index",
 			"van-field": "/wxcomponents/vant-weapp/field/index",
-			"van-icon": "/wxcomponents/vant-weapp/icon/index",
+			"van-icon": "/wxcomponents/vant-weapp/image/index",
+			"van-image": "/wxcomponents/vant-weapp/icon/index",
 			"van-cell": "/wxcomponents/vant-weapp/cell/index",
 			"van-popup": "/wxcomponents/vant-weapp/popup/index",
 			"van-action-sheet": "/wxcomponents/vant-weapp/action-sheet/index",
@@ -46,6 +71,31 @@
 		"navigationBarBackgroundColor": "#EEA9B8",
 		"backgroundColor": "#F5F7FA",
 		"enablePullDownRefresh": true
+	},
+	"tabBar": {
+		"color": "#B2B2B2",
+		"selectedColor": "#EEA9B8",
+		"backgroundColor": "#FFFFFF",
+		"list": [
+			{
+				"pagePath": "pages/todo/index",
+				"text": "TODO",
+				"iconPath": "./static/icons/todo-active.png",
+				"selectedIconPath": "./static/icons/todo-active.png"
+			},
+			{
+				"pagePath": "pages/home/index",
+				"text": "HOME",
+				"iconPath": "./static/icons/home-active.png",
+				"selectedIconPath": "./static/icons/home-active.png"
+			},
+			{
+				"pagePath": "pages/summary/index",
+				"text": "SUMMARY",
+				"iconPath": "./static/icons/summary-active.png",
+				"selectedIconPath": "./static/icons/summary-active.png"
+			}
+		]
 	},
 	"uniIdRouter": {}
 }
