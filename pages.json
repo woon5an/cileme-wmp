@@ -31,6 +31,19 @@
 				"navigationBarTitleText": "汇总",
 				"enablePullDownRefresh": true
 			}
+		},
+		{
+			"path": "pages/summary/components/card/index",
+			"name": "card",
+			"meta": {
+				"name": "card",
+				"roles": []
+			},
+			"style": {
+				"navigationBarTitleText": "详情",
+				"enablePullDownRefresh": false,
+				"backgroundColor": "#F2F4F7"
+			}
 		}
 	],
 	"globalStyle": {
