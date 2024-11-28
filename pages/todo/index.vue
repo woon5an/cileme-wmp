@@ -10,7 +10,10 @@
 				TODO
 			</view>
 			<view class="toDoList_content">
-				<view class="toDoList_content_item" v-for="(item, index) in FOODLIST" :key="index" @click="handleToDo">
+				<view v-if="FOODLIST.length === 0" class="emptyMessage">
+					🐮啊都被你吃完了！
+				</view>
+				<view v-else class="toDoList_content_item" v-for="(item, index) in FOODLIST" :key="index" @click="handleToDo(item, index)">
 					{{item}}
 				</view>
 			</view>
@@ -20,15 +23,30 @@
 				FINISHED
 			</view>
 			<view class="finishedList_content">
-				<view class="finishedList_content_item" v-for="item in FINISHEDLIST" :key="item">
+				<view v-if="FINISHEDLIST.length === 0" class="emptyMessage">
+					记得按时吃饭！
+				</view>
+				<view v-else class="finishedList_content_item" v-for="item in FINISHEDLIST" :key="item">
 					{{item}}
 				</view>
 			</view>
 		</view>
-		<uni-popup ref="inputDialog" v-model="showInput" type="dialog">
-			<uni-popup-dialog  mode="input" title="让我看看你吃了什么" value=""
-				placeholder="请输入内容" @confirm="dialogInputConfirm"></uni-popup-dialog>
-		</uni-popup>
+		<van-dialog
+		  use-slot
+		  title="让我看看你吃了什么"
+		  :show="showInput"
+		  confirmButtonText="提交"
+		  cancelButtonText="取消"
+		  show-cancel-button
+		  custom-class="my-custom-class"
+		  confirm-button-color="#EEA9B8"
+		  @confirm="dialogInputConfirm"
+		  @cancel="handleCancel"
+		>
+			<view class="inputWrap">
+				<input class="weui-input" :value="foodInfo"  placeholder="请输入内容"/>
+			</view>
+		</van-dialog>
 	</view>
 </template>
 
@@ -38,6 +56,7 @@ const FOODLIST = ref(['🍳BREAKFAST','🍜LUNCH','🍲DINNER', '🍘SNACK', '�
 const FINISHEDLIST = ref([])
 const currentItem = ref('')
 const showInput = ref(false)
+const foodInfo = ref('')
 const handleToDo = (prop, index) => {
 	currentItem.value = prop
 	showInput.value = true
@@ -47,10 +66,38 @@ const dialogInputConfirm = ()=> {
 	const index = todoList.findIndex(e=> e === currentItem.value)
 	todoList.splice(index, 1)
 	FINISHEDLIST.value.push(currentItem.value)
+	FOODLIST.value = todoList
+	foodInfo.value = ''
+	showInput.value = false
+}
+const handleCancel = ()=> {
+	currentItem.value = ''
+	foodInfo.value = ''
+	showInput.value = false
 }
 </script>
 
 <style scoped lang="scss">
+.inputWrap {
+	width: 100%;
+	height: 150rpx;
+	line-height: 150rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	.weui-input {
+		width: 500rpx;
+		height: 70rpx;
+		border-radius: 10rpx;
+		border: 1px solid #eee;
+		padding-left: 20rpx;
+	}
+}
+.emptyMessage {
+	box-sizing: border-box;
+	width: 100%;
+	text-align: center;
+}
 .toDoPage {
 	width: 100%;
 	height: 100vh;
@@ -113,6 +160,7 @@ const dialogInputConfirm = ()=> {
 		text-align: center;
 		box-shadow: 2rpx 2rpx 8rpx #aaa;
 		border-radius: 20rpx;
+		background-color: #fbeaed;
 		.toDoList_head {
 			@extend .card_head;
 		}
@@ -149,9 +197,10 @@ const dialogInputConfirm = ()=> {
 		text-align: center;
 		box-shadow: 2rpx 2rpx 8rpx #aaa;
 		border-radius: 20rpx;
+		background-color: #fff6e5;
 		.finishedList_head {
 			@extend .card_head;
-			background-color: #6cfd97;
+			background-color: #ffdc99;
 		}
 		.finishedList_head::before {
 			position: absolute;
@@ -171,10 +220,10 @@ const dialogInputConfirm = ()=> {
 			gap: 30rpx;
 		}
 		.finishedList_content_item {
-			background: #6cfd97;
+			background: #ffdc99;
 			padding: 20rpx;
 			border-radius: 25rpx;
-			// color: #FFFFFF;
+			color: #FFFFFF;
 		}
 	}
 }
