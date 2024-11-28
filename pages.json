@@ -16,7 +16,7 @@
 				"roles": []
 			},
 			"style": {
-				"navigationBarTitleText": "今日任务",
+				"navigationBarTitleText": "TODAY",
 				"enablePullDownRefresh": true
 			}
 		},
@@ -28,7 +28,7 @@
 				"roles": []
 			},
 			"style": {
-				"navigationBarTitleText": "汇总",
+				"navigationBarTitleText": "SUMMARY",
 				"enablePullDownRefresh": true
 			}
 		},

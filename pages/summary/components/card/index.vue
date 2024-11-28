@@ -79,9 +79,9 @@
 	  <view class="head">
 		2024-11-28
 	  </view>
-      <view class="name">{{ name2 }}</view>
+<!--      <view class="name">{{ name2 }}</view>
       <view class="location">{{ location2 }}</view>
-      <image class="like-img" :src="likeImgURL2" mode="cover" @click="likeImgDidClick"></image>
+      <image class="like-img" :src="likeImgURL2" mode="cover" @click="likeImgDidClick"></image> -->
     </view>
 	
 	<view class="result">

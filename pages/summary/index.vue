@@ -1,9 +1,9 @@
 <template>
 	<view class="summary" @click="handleClick">
 		<view class="top">
-			我是顶部
+			我是顶部 可以点我一下
 		</view>
-		<view class="calendarWrap">
+<!-- 		<view class="calendarWrap">
 			<view class="calendar-header">
 				<view class="header">
 					发车日期
@@ -22,7 +22,6 @@
 				</span>
 			</view>
 			<view class="calendar-content">
-				<!-- VantUI的日历组件 -->
 				<van-calendar
 				  row-height="43"
 				  :max-range="35"
@@ -40,7 +39,7 @@
 				  @unselect="unselectDay"
 				/>
 			</view>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -64,6 +63,12 @@ const handleClick = ()=> {
 				box-shadow: 0px -3px 12px 0px rgba(0,0,0,0.04) !important;
 				padding: 0px 88px !important;
 			}
+		}
+		.top{
+			width: 100%;
+			height: 100rpx;
+			line-height: 100rpx;
+			text-align: center;
 		}
 	}
 
