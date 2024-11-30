@@ -55,6 +55,7 @@
 			"van-icon": "/wxcomponents/vant-weapp/image/index",
 			"van-image": "/wxcomponents/vant-weapp/icon/index",
 			"van-cell": "/wxcomponents/vant-weapp/cell/index",
+			"van-circle": "/wxcomponents/vant-weapp/circle/index",
 			"van-popup": "/wxcomponents/vant-weapp/popup/index",
 			"van-action-sheet": "/wxcomponents/vant-weapp/action-sheet/index",
 			"van-calendar": "/wxcomponents/vant-weapp/calendar/index",

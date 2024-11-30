@@ -43,6 +43,13 @@
 			</view>
 		</view>
 		
+		<view class="bottom">
+			<van-circle :size="100" value="70" color="#EEA9B8" stroke-width="8">
+				<view style="color: #EEA9B8;">
+					达标率
+				</view>
+			</van-circle>
+		</view>
 
 	</view>
 </template>
@@ -72,12 +79,9 @@ const minDate = ref(moment().startOf('month').valueOf())
 const maxDate = ref(moment().endOf('month').valueOf())
 
 const preMonth = ()=> {
-
 	const date = minDate.value
 	minDate.value = dateUtils.preMonthStartForDate(date)
 	maxDate.value = dateUtils.preMonthEndForDate(date)
-	console.log(minDate.value)
-	console.log(maxDate.value)
 }
 
 const nextMonth = ()=> {
@@ -224,6 +228,12 @@ const getTodayLuck = ()=> {
 				}
 	
 			}
+		}
+		.bottom {
+			width: 100%;
+			height: 200rpx;
+			display: flex;
+			justify-content: center;
 		}
 	}
 
