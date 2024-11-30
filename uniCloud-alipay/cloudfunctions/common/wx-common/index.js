@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken')
  
 // 密匙
-const secret = '***'
+const secret = 'cileme'
  
 //生成token
 function getToken(value) {

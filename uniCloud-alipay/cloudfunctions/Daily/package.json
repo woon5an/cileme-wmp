@@ -1,0 +1,9 @@
+{
+  "name": "Daily",
+  "dependencies": {
+    "moment": "^2.30.1"
+  },
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

@@ -39,12 +39,13 @@ app.$mount()
 // #endif
 
 // #ifdef VUE3
-
+import http from './common/cloudHttp.js';
 import { createPinia } from "pinia";
 import { createSSRApp } from 'vue'
 export function createApp() {
   const app = createSSRApp(App)
   app.use(createPinia())
+  app.config.globalProperties.$http = http
   return {
     app
   }

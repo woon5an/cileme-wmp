@@ -2,7 +2,7 @@
 	<view class="toDoPage">
 		<view class="head">
 			<view class="date">
-				2024-11-28
+				{{today}}
 			</view>
 		</view>
 		<view class="toDolist">
@@ -14,7 +14,7 @@
 					🐮啊都被你吃完了！
 				</view>
 				<view v-else class="toDoList_content_item" v-for="(item, index) in FOODLIST" :key="index" @click="handleToDo(item, index)">
-					{{item}}
+					{{FOOD_MAP[item].label}}
 				</view>
 			</view>
 		</view>
@@ -27,7 +27,7 @@
 					记得按时吃饭！
 				</view>
 				<view v-else class="finishedList_content_item" v-for="item in FINISHEDLIST" :key="item">
-					{{item}}
+					{{FOOD_MAP[item].label}}
 				</view>
 			</view>
 		</view>
@@ -51,12 +51,45 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
-const FOODLIST = ref(['🍳BREAKFAST','🍜LUNCH','🍲DINNER', '🍘SNACK', '🍰CAKE'])
+import {computed, getCurrentInstance, onMounted, ref} from 'vue'
+import moment from 'moment'
+import { FOOD_MAP,FOOD_ARR } from './const.js'
+const {proxy} = getCurrentInstance()
+onMounted(()=> {
+	getTodayData()
+})
+const FOODLIST = ref(FOOD_ARR)
 const FINISHEDLIST = ref([])
 const currentItem = ref('')
 const showInput = ref(false)
 const foodInfo = ref('')
+const today = computed(() => {
+	return moment().format('YYYY-MM-DD')
+})
+
+const getTodayData = ()=> {
+	proxy.$http('Daily').then(res => {
+		const code = res.result.errCode
+		if([0, 2].indexOf(code) !== -1){
+			wx.showToast({
+			  title: '今天说一点没吃哇~',
+			  icon: 'none',
+			  duration: 2000
+			})
+		} else {
+			const todoList = []
+			const finishedList = []
+			const data = res.result.data
+			for(prop in FOOD_ARR){
+				if(data[prop] !== ''){
+					finishedList.push(prop)
+				} else {
+					todoList.push(prop)
+				}
+			}
+		}
+	})
+}
 const handleToDo = (prop, index) => {
 	currentItem.value = prop
 	showInput.value = true
