@@ -100,8 +100,8 @@ const nextMonth = ()=> {
 	getMonthData()
 }
 
-const selectDay = ()=> {
-	handleClick()
+const selectDay = (Date)=> {
+	handleClick(Date)
 }
 const unselectDay = ()=> {
 	
@@ -161,9 +161,14 @@ const handleDateFormatter = (day)=> {
 	}
 	return day
 }
-const handleClick = ()=> {
+const handleClick = (Date)=> {
+	const date = moment(Date.detail).format('YYYY-MM-DD')
+	const params = {
+	  currentDate: date,
+	  dates: recordDates.value.map(e => e.exactDate)
+	};
 	uni.navigateTo({
-		url: '/pages/summary/components/card/index'
+		url: `/pages/summary/components/card/index?data=${encodeURIComponent(JSON.stringify(params))}`
 	})
 }
 

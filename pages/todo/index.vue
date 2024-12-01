@@ -71,10 +71,10 @@ const getTodayData = ()=> {
 	wx.showLoading({
 	  title: '加载中',
 	})
-	proxy.$http('Daily').then(res => {
+	proxy.$http('Daily', {exactDate: today.value}).then(res => {
 		wx.hideLoading()
 		const code = res.result.errCode
-		if([0, 2].indexOf(code) !== -1){
+		if(code === 2){
 			wx.showToast({
 			  title: '今天是一点没吃哇~',
 			  icon: 'none',
@@ -101,7 +101,6 @@ const getTodayData = ()=> {
 }
 
 const handleInput = (e)=> {
-	console.log(e)
 	foodInfo.value = e.detail.value
 }
 

@@ -1,46 +1,54 @@
 'use strict';
 const moment = require('moment'); 
-// 创建user数据表实例
-const db = uniCloud.database()
-const daily = db.collection('daily')
-// 校验token公共模块
-const {verifyToken} = require('wx-common')
+const db = uniCloud.database();
+const daily = db.collection('daily');
+const { verifyToken } = require('wx-common');
+
 exports.main = async (event, context) => {
-	const user = verifyToken(event.token).value
-	const today = moment().format('YYYY-MM-DD')
-	const exactInfo = event.exactInfo
-	const prop = exactInfo.prop
-	const dayInfo = await daily.where({
-		openid: user,
-		exactDate: today
-	}).get()
-	console.log(dayInfo)
-	if(dayInfo.data && dayInfo.data.length === 0){
-		await daily.add({
-			openid: user,
-			[prop]: exactInfo.value,
-			exactDate: today,
-			score: exactInfo.score
-		})
-		return {
-			errCode: 1,
-			msg: '记录成功',
-			data: {}
-		}
-	} else {
-		const currentScore = dayInfo.data[0].score || 0
-		const updatedScore = currentScore + exactInfo.score
-		await daily.where({
-			openid: user,
-			exactDate: today
-		}).update({
-			[prop]: exactInfo.value,
-			score: updatedScore
-		})
-		return {
-			errCode: 1,
-			msg: '记录成功',
-			data: {}
-		}
-	}
+  const user = verifyToken(event.token).value;
+  const today = moment().format('YYYY-MM-DD');
+  const exactInfo = event.exactInfo;
+  const prop = exactInfo.prop;
+  const value = exactInfo.value;
+  const score = exactInfo.score;
+
+  // 使用 upsert 来处理插入或更新操作
+  const res = await daily.where({
+    openid: user,
+    exactDate: today
+  }).get();
+
+  let currentScore = 0;
+
+  if (res.data && res.data.length > 0) {
+    // 如果已有记录，获取当前 score 值
+    currentScore = res.data[0].score || 0;
+  }
+
+  const updatedScore = currentScore + score;
+
+  // 使用 upsert（如果记录存在则更新，不存在则插入）
+  const updateResult = await daily.where({
+    openid: user,
+    exactDate: today
+  }).update({
+    [prop]: value,
+    score: updatedScore
+  });
+
+  // 如果没有记录，则插入新记录
+  if (res.data.length === 0) {
+    await daily.add({
+      openid: user,
+      [prop]: value,
+      exactDate: today,
+      score: updatedScore
+    });
+  }
+
+  return {
+    errCode: 1,
+    msg: '记录成功',
+    data: {}
+  };
 };

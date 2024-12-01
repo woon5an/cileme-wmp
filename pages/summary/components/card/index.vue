@@ -10,10 +10,18 @@
       :animation="animation1"
     >
 	  <view class="head">
-	  	2024-11-28
+	  	{{ card_date}}
 	  </view>
 	  <view class="content">
-	  	<view class="row">
+		    <view class="row" v-for="(item, index) in FOODLIST" :key="index">
+				<view class="label">
+					{{FOOD_MAP[item].label}}
+				</view>
+				<view class="score">
+					{{FOOD_MAP[item].score < 0 ? '➖' : '➕'}} {{FOOD_MAP[item].score}}
+				</view>
+		    </view>
+<!-- 	  	<view class="row">
 			<view class="label">
 				🍳BREAKFAST
 			</view>
@@ -52,13 +60,13 @@
 			<view class="score">
 				➕10
 			</view>
-		</view>
+		</view> -->
 		<view class="total">
 			<view class="label">
 				TOTAL:
 			</view>
 			<view class="score">
-				60
+				{{totalScore}}
 			</view>
 		</view>
 	  </view>
@@ -76,13 +84,31 @@
       @touchend="viewTouchUpDownInside"
       :animation="animation2"
     >
-	  <view class="head">
-		2024-11-28
-	  </view>
+	    <view class="head">
+		  {{ card_date}}
+	    </view>
 <!--      <view class="name">{{ name2 }}</view>
       <view class="location">{{ location2 }}</view>
       <image class="like-img" :src="likeImgURL2" mode="cover" @click="likeImgDidClick"></image> -->
-    </view>
+		<view class="content">
+			<view class="row" v-for="(item, index) in FOODLIST" :key="index">
+				<view class="label">
+					{{FOOD_MAP[item].label}}
+				</view>
+				<view class="score">
+					{{FOOD_MAP[item].score}}
+				</view>
+			</view>
+			<view class="total">
+				<view class="label">
+					TOTAL:
+				</view>
+				<view class="score">
+					{{totalScore}}
+				</view>
+			</view>
+		</view>
+	</view>
 	
 	<view class="result">
 		还可以嘛！
@@ -91,8 +117,22 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, getCurrentInstance, computed } from 'vue'
+import { onLoad } from "@dcloudio/uni-app"
+import { FOOD_MAP,FOOD_ARR } from '@/pages/todo/const.js'
+onLoad((options)=> {
+  // 获取传递的对象字符串，并转换为对象
+  const datesInfo = JSON.parse(decodeURIComponent(options.data));
+  card_date.value = datesInfo.currentDate
+  recordDates.value = datesInfo.dates
+  getDateData(card_date.value)
+})
 
+const { proxy } = getCurrentInstance()
+
+const FOODLIST = ref([])
+const card_date = ref('')
+const recordDates = ref([])
 const marginHori = 74
 const marginVerti = 100
 
@@ -142,9 +182,46 @@ const viewTouchInside = (event) => {
     animation2.value = animation.export()
   }
 }
+const totalScore = computed(()=> {
+	let score = 0
+	for(const prop of FOODLIST.value){
+		score += FOOD_MAP[prop].score
+	}
+	return score
+})
 
+const getDateData = (date)=> {
+	wx.showLoading({
+	  title: '加载中',
+	})
+	proxy.$http('Daily', {exactDate: date}).then(res => {
+		wx.hideLoading()
+		const code = res.result.errCode
+		if(code === 2){
+			wx.showToast({
+			  title: '今天是一点没吃哇~',
+			  icon: 'none',
+			  duration: 2000
+			})
+		} else {
+			const finishedList = []
+			const data = res.result.data
+			for(const prop of FOOD_ARR){
+				if(data[prop] !== '' && data[prop] !== null){
+					finishedList.push(prop)
+				} 
+			}
+			FOODLIST.value = finishedList
+		}
+	}).catch(()=> {
+		wx.hideLoading()
+	})
+}
 // 触摸移动事件
 const viewDidMove = (event) => {
+  if(recordDates.value.length === 1){
+	  return
+  }
   const pointX = event.touches[0].pageX
   const pointY = event.touches[0].pageY
 
@@ -191,15 +268,20 @@ const viewTouchUpDownInside = (event) => {
 
   const distanceX = endX - startX.value
   const distanceY = endY - startY.value
-
+  
+  const dateIndex = recordDates.value.findIndex(e=>e === card_date.value)
   // 判断是否需要移除卡片
   if (distanceX > 93.75) {
+	getDateData(recordDates.value[dateIndex] + 1)  
     removeCard('right')
   } else if (distanceX < -93.75) {
+	getDateData(recordDates.value[dateIndex] - 1)  
     removeCard('left')
   } else if (distanceY < -100) {
+	getDateData(recordDates.value[dateIndex] - 1)  
     removeCard('up')
   } else if (distanceY > 100) {
+	getDateData(recordDates.value[dateIndex] + 1)  
     removeCard('down')
   }
 
