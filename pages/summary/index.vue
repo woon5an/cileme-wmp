@@ -17,6 +17,7 @@
 			</view>
 			<view class="calendar-content">
 				<van-calendar
+				  v-if="showCalendar"
 				  row-height="43"
 				  type="single"
 				  color="#EEA9B8"
@@ -46,7 +47,7 @@
 		<view class="bottom">
 			<van-circle :size="100" value="70" color="#EEA9B8" stroke-width="8">
 				<view style="color: #EEA9B8;">
-					达标率
+					达标率{{rate}}%
 				</view>
 			</van-circle>
 		</view>
@@ -55,15 +56,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, getCurrentInstance,nextTick, watchEffect } from 'vue'
 import moment from 'moment'
 import Toast from '../../wxcomponents/vant-weapp/toast/toast'
 import { dateUtils } from "@/utils/utils.js"
+const {proxy} = getCurrentInstance()
 onMounted(()=> {
-
+	getMonthData()
 })
+const showCalendar = ref(false)
+const calendarKey = ref(0)
+const forceRerender = () => {
+  calendarKey.value++// 增加 key 强制重新渲染
+}
 
-const calendarKey = `${Math.random()}`
+const rate = ref(0)
+
 const monthTitle = computed(()=> {
 	const date = new Date(minDate.value)
 	let m = date.getMonth() + 1
@@ -82,12 +90,14 @@ const preMonth = ()=> {
 	const date = minDate.value
 	minDate.value = dateUtils.preMonthStartForDate(date)
 	maxDate.value = dateUtils.preMonthEndForDate(date)
+	getMonthData()
 }
 
 const nextMonth = ()=> {
 	const date = minDate.value
 	minDate.value = dateUtils.nextMonthStartForDate(date)
 	maxDate.value = dateUtils.nextMonthEndForDate(date)
+	getMonthData()
 }
 
 const selectDay = ()=> {
@@ -97,23 +107,41 @@ const unselectDay = ()=> {
 	
 }
 
-const recordDates = ref([
-	{
-		record: true,
-		exactDate: '2024-11-27',
-		pass: false
-	},
-	{
-		record: true,
-		exactDate: '2024-11-28',
-		pass: true
-	},
-	{
-		record: true,
-		exactDate: '2024-11-29',
-		pass: true
-	}
-])
+const recordDates = ref([])
+const forceUpdateFlag = ref(false); // 用于强制视图更新
+const getMonthData = () => {
+	const month = moment(minDate.value).format('YYYY-MM') 
+	wx.showLoading({
+	  title: '加载中',
+	})
+	proxy.$http('MonthRecord', { month }).then(res=> {
+		wx.hideLoading()
+		const code = res.result.errCode
+		if([0, 2].indexOf(code) !== -1){
+			wx.showToast({
+			  title: '这个月一点没吃哇~',
+			  icon: 'none',
+			  duration: 2000
+			})
+		} else {
+			recordDates.value = res.result.data
+			showCalendar.value = true
+			console.log(recordDates.value)
+			forceUpdateFlag.value = !forceUpdateFlag.value
+			computeRate()
+			// forceRerender()
+			forceRerender()
+		}
+	}).catch(()=> {
+		wx.hideLoading()
+	})
+}
+
+const computeRate = () => {
+	const monthDays = moment(minDate.value).daysInMonth()
+	const passDays = recordDates.value.filter(e=> e.pass).length
+	return  passDays === 0 ? 0 : (passDays / monthDays).toFixed(2) * 100
+}
 
 const handleDateFormatter = (day)=> {
 	const dateStr = dateUtils.formatDate(day.date)
@@ -121,7 +149,7 @@ const handleDateFormatter = (day)=> {
 		day.text = '今'
 	}
 	//在ticketDates有票日期里查找是否包含该天
-	const match = (recordDates.value || []).find(e => {
+	const match = recordDates.value.find(e => {
 		return e.exactDate === dateStr
 	})
 	if(!match){
@@ -131,7 +159,6 @@ const handleDateFormatter = (day)=> {
 	} else {
 		day.bottomInfo = '❌'
 	}
-
 	return day
 }
 const handleClick = ()=> {

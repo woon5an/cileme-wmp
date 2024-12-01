@@ -68,12 +68,15 @@ const today = computed(() => {
 })
 
 const getTodayData = ()=> {
+	wx.showLoading({
+	  title: '加载中',
+	})
 	proxy.$http('Daily').then(res => {
-		console.log(res)
+		wx.hideLoading()
 		const code = res.result.errCode
 		if([0, 2].indexOf(code) !== -1){
 			wx.showToast({
-			  title: '今天说一点没吃哇~',
+			  title: '今天是一点没吃哇~',
 			  icon: 'none',
 			  duration: 2000
 			})
@@ -92,6 +95,8 @@ const getTodayData = ()=> {
 			FINISHEDLIST.value = finishedList
 			FOODLIST.value = todoList
 		}
+	}).catch(()=> {
+		wx.hideLoading()
 	})
 }
 
