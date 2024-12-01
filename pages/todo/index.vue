@@ -44,7 +44,7 @@
 		  @cancel="handleCancel"
 		>
 			<view class="inputWrap">
-				<input class="weui-input" :value="foodInfo"  placeholder="请输入内容"/>
+				<input class="weui-input" :value="foodInfo"  placeholder="请输入内容"  @input="handleInput"/>
 			</view>
 		</van-dialog>
 	</view>
@@ -69,6 +69,7 @@ const today = computed(() => {
 
 const getTodayData = ()=> {
 	proxy.$http('Daily').then(res => {
+		console.log(res)
 		const code = res.result.errCode
 		if([0, 2].indexOf(code) !== -1){
 			wx.showToast({
@@ -80,28 +81,62 @@ const getTodayData = ()=> {
 			const todoList = []
 			const finishedList = []
 			const data = res.result.data
-			for(prop in FOOD_ARR){
-				if(data[prop] !== ''){
+			for(const prop of FOOD_ARR){
+				console.log(prop)
+				if(data[prop] !== '' && data[prop] !== null){
 					finishedList.push(prop)
 				} else {
 					todoList.push(prop)
 				}
 			}
+			FINISHEDLIST.value = finishedList
+			FOODLIST.value = todoList
 		}
 	})
 }
+
+const handleInput = (e)=> {
+	console.log(e)
+	foodInfo.value = e.detail.value
+}
+
 const handleToDo = (prop, index) => {
 	currentItem.value = prop
+	foodInfo.value = ''
 	showInput.value = true
 }
 const dialogInputConfirm = ()=> {
-	const todoList = FOODLIST.value.slice()
-	const index = todoList.findIndex(e=> e === currentItem.value)
-	todoList.splice(index, 1)
-	FINISHEDLIST.value.push(currentItem.value)
-	FOODLIST.value = todoList
-	foodInfo.value = ''
-	showInput.value = false
+	const food = currentItem.value
+	const exactInfo = {
+		prop: food,
+		value: foodInfo.value,
+		score: FOOD_MAP[food].score
+	}
+	proxy.$http('ReportFood', {exactInfo}).then(res=> {
+		const code = res.result.errCode
+		if(code === 1){
+			const todoList = FOODLIST.value.slice()
+			const index = todoList.findIndex(e=> e === food)
+			todoList.splice(index, 1)
+			FINISHEDLIST.value.push(food)
+			FOODLIST.value = todoList
+			foodInfo.value = ''
+			showInput.value = false
+			wx.showToast({
+			  title: 'okok',
+			  icon: 'success',
+			  duration: 2000
+			})
+		} else {
+			wx.showToast({
+			  title: '好像出了点问题',
+			  icon: 'error',
+			  duration: 2000
+			})
+			foodInfo.value = ''
+			showInput.value = false
+		}
+	})
 }
 const handleCancel = ()=> {
 	currentItem.value = ''

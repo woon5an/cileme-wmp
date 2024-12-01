@@ -40,7 +40,7 @@ const http = (Name, Data = {}) => {
 							
 							uniCloud.callFunction({
 								name: Name,
-								data: Object.assign(Data, token),
+								data: Object.assign(Data, {token}),
 								success: (res) => {
 									resolve(res)
 								},

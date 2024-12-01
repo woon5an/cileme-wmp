@@ -7,22 +7,27 @@ export const FOOD_ARR = ['breakfast','lunch','dinner', 'snack', 'cake']
 export const FOOD_MAP = {
 	[BREAKFAST]: {
 		label: '🍳BREAKFAST',
-		prop: 'breakfast'
+		prop: 'breakfast',
+		score: 20
 	},
 	[LUNCH]:{
 		label: '🍜LUNCH',
-		prop: 'lunch'
+		prop: 'lunch',
+		score: 40
 	},
 	[DINNER]: {
 		label: '🍲DINNER',
-		prop: 'dinner'
+		prop: 'dinner',
+		score: 40
 	},
 	[SNACK]: {
 		label: '🍘SNACK',
-		prop: 'snack'
+		prop: 'snack',
+		score: -20
 	},
 	[CAKE]: {
 		label: '🍰CAKE',
-		prop: 'cake'
+		prop: 'cake',
+		score: -20
 	}
 }
