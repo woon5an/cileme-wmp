@@ -45,9 +45,9 @@
 		</view>
 		
 		<view class="bottom">
-			<van-circle :size="100" value="70" color="#EEA9B8" stroke-width="8">
+			<van-circle :size="120" value="rate" color="#EEA9B8" stroke-width="8">
 				<view style="color: #EEA9B8;">
-					达标率{{rate}}%
+					达标率 {{rate}}%
 				</view>
 			</van-circle>
 		</view>

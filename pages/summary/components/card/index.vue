@@ -15,52 +15,15 @@
 	  <view class="content">
 		    <view class="row" v-for="(item, index) in FOODLIST" :key="index">
 				<view class="label">
-					{{FOOD_MAP[item].label}}
+					{{FOOD_MAP[item.prop].label}}
 				</view>
 				<view class="score">
-					{{FOOD_MAP[item].score < 0 ? '➖' : '➕'}} {{FOOD_MAP[item].score}}
+					{{item.value}}
+				</view>
+				<view class="score">
+					{{FOOD_MAP[item.prop].score < 0 ? '➖' : '➕'}} {{FOOD_MAP[item.prop].score}}
 				</view>
 		    </view>
-<!-- 	  	<view class="row">
-			<view class="label">
-				🍳BREAKFAST
-			</view>
-			<view class="score">
-				➕10
-			</view>
-	  	</view>
-		<view class="row">
-			<view class="label">
-				🍜LUNCH
-			</view>
-			<view class="score">
-				➕10
-			</view>
-		</view>
-		<view class="row">
-			<view class="label">
-				🍜LUNCH
-			</view>
-			<view class="score">
-				➕10
-			</view>
-		</view>
-		<view class="row">
-			<view class="label">
-				🍜LUNCH
-			</view>
-			<view class="score">
-				➕10
-			</view>
-		</view>
-		<view class="row">
-			<view class="label">
-				🍜LUNCH
-			</view>
-			<view class="score">
-				➕10
-			</view>
-		</view> -->
 		<view class="total">
 			<view class="label">
 				TOTAL:
@@ -70,9 +33,6 @@
 			</view>
 		</view>
 	  </view>
-<!--      <view class="name">{{ name1 }}</view>
-      <view class="location">{{ location1 }}</view>
-      <image class="like-img" :src="likeImgURL1" mode="cover" @click="likeImgDidClick"></image> -->
     </view>
 
     <!-- 卡片2 -->
@@ -87,16 +47,16 @@
 	    <view class="head">
 		  {{ card_date}}
 	    </view>
-<!--      <view class="name">{{ name2 }}</view>
-      <view class="location">{{ location2 }}</view>
-      <image class="like-img" :src="likeImgURL2" mode="cover" @click="likeImgDidClick"></image> -->
 		<view class="content">
 			<view class="row" v-for="(item, index) in FOODLIST" :key="index">
 				<view class="label">
-					{{FOOD_MAP[item].label}}
+					{{FOOD_MAP[item.prop].label}}
 				</view>
 				<view class="score">
-					{{FOOD_MAP[item].score}}
+					{{item.value}}
+				</view>
+				<view class="score">
+					{{FOOD_MAP[item.prop].score < 0 ? '➖' : '➕'}} {{FOOD_MAP[item.prop].score}}
 				</view>
 			</view>
 			<view class="total">
@@ -184,13 +144,14 @@ const viewTouchInside = (event) => {
 }
 const totalScore = computed(()=> {
 	let score = 0
-	for(const prop of FOODLIST.value){
-		score += FOOD_MAP[prop].score
+	for(const food of FOODLIST.value){
+		score += FOOD_MAP[food.prop].score
 	}
 	return score
 })
 
 const getDateData = (date)=> {
+	card_date.value = date
 	wx.showLoading({
 	  title: '加载中',
 	})
@@ -208,7 +169,10 @@ const getDateData = (date)=> {
 			const data = res.result.data
 			for(const prop of FOOD_ARR){
 				if(data[prop] !== '' && data[prop] !== null){
-					finishedList.push(prop)
+					finishedList.push({
+						prop,
+						value: data[prop]
+					})
 				} 
 			}
 			FOODLIST.value = finishedList
@@ -260,9 +224,32 @@ const viewDidMove = (event) => {
     animation2.value = animationRotate.export()
   }
 }
+/**
+ * @param type 1:下一天 2:上一天
+ */
+const getNextDate = (type)=> {
+	const length = recordDates.value.length
+	const dateIndex = recordDates.value.findIndex(e=>e === card_date.value)
+	if(type === 1){
+		if(dateIndex === length - 1){
+			return recordDates.value[0]
+		}else {
+			return recordDates.value[dateIndex + 1]
+		}
+	} else {
+		if(dateIndex === 0){
+			return recordDates.value[length - 1]
+		} else {
+			return recordDates.value[dateIndex - 1]
+		}
+	}
+}
 
 // 触摸结束事件
 const viewTouchUpDownInside = (event) => {
+  if(recordDates.value.length === 1){
+	return
+  }
   const endX = event.changedTouches[0].pageX
   const endY = event.changedTouches[0].pageY
 
@@ -272,16 +259,16 @@ const viewTouchUpDownInside = (event) => {
   const dateIndex = recordDates.value.findIndex(e=>e === card_date.value)
   // 判断是否需要移除卡片
   if (distanceX > 93.75) {
-	getDateData(recordDates.value[dateIndex] + 1)  
+	getDateData(getNextDate(1))  
     removeCard('right')
   } else if (distanceX < -93.75) {
-	getDateData(recordDates.value[dateIndex] - 1)  
+	getDateData(getNextDate(2))  
     removeCard('left')
   } else if (distanceY < -100) {
-	getDateData(recordDates.value[dateIndex] - 1)  
+	getDateData(getNextDate(1))  
     removeCard('up')
   } else if (distanceY > 100) {
-	getDateData(recordDates.value[dateIndex] + 1)  
+	getDateData(getNextDate(2))  
     removeCard('down')
   }
 
@@ -403,7 +390,7 @@ const requestLike = () => {
   justify-content: center;
   box-sizing: border-box;
   overflow: hidden;
-  background-color: #fff;
+  background-color: #fbeaed;
 } 
 
 /* 卡片样式 */
@@ -411,7 +398,7 @@ const requestLike = () => {
   width: 600rpx;
   height: 800rpx;
   box-sizing: border-box;
-  background-color: white;
+  background-color: transparent;
   text-align: center;
   box-shadow: 2rpx 2rpx 8rpx #aaa;
   border-radius: 20rpx;
@@ -457,7 +444,7 @@ const requestLike = () => {
 	justify-content: flex-start;
 	align-items: center;
 	gap: 20rpx;
-
+	background-color: #ffffff;
 	.row {
 		width: 100%;
 		height: 100rpx;
