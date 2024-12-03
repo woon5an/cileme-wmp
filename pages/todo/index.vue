@@ -53,11 +53,18 @@
 <script setup>
 import {computed, getCurrentInstance, onMounted, ref} from 'vue'
 import moment from 'moment'
+import { onShow } from "@dcloudio/uni-app"
 import { FOOD_MAP,FOOD_ARR } from './const.js'
 const {proxy} = getCurrentInstance()
-onMounted(()=> {
+// onMounted(()=> {
+// 	getTodayData()
+// 	UserId.value = uni.getStorageSync('UserId')
+// })
+onShow(()=> {
+	UserId.value = uni.getStorageSync('UserId')
 	getTodayData()
 })
+const UserId = ref('')
 const FOODLIST = ref(FOOD_ARR)
 const FINISHEDLIST = ref([])
 const currentItem = ref('')
@@ -69,9 +76,10 @@ const today = computed(() => {
 
 const getTodayData = ()=> {
 	wx.showLoading({
+	  mask: true,
 	  title: '加载中',
 	})
-	proxy.$http('Daily', {exactDate: today.value}).then(res => {
+	proxy.$http('Daily', {exactDate: today.value, userId: UserId.value}).then(res => {
 		wx.hideLoading()
 		const code = res.result.errCode
 		if(code === 2){
@@ -116,7 +124,12 @@ const dialogInputConfirm = ()=> {
 		value: foodInfo.value,
 		score: FOOD_MAP[food].score
 	}
-	proxy.$http('ReportFood', {exactInfo}).then(res=> {
+	wx.showLoading({
+	  mask: true,
+	  title: '记录中',
+	})
+	proxy.$http('ReportFood', {exactInfo, userId: UserId.value}).then(res=> {
+		wx.hideLoading()
 		const code = res.result.errCode
 		if(code === 1){
 			const todoList = FOODLIST.value.slice()

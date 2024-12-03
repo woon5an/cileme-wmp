@@ -63,7 +63,15 @@ exports.main = async (event, context) => {
 			nickName: true,
 			mobile:true,
 			token:true,
-		}).get()
+			_id: true
+		}).get().then(ress => {
+		  // 映射 _id 为 userId
+		  ress.data = ress.data.map(item => ({
+			...item,
+			userId: item._id, // 添加 userId 字段
+		  }))
+		  return ress
+		})
  
 	} else {
     //获取用户openid和session_key失败响应客户端

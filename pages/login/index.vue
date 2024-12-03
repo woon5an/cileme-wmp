@@ -60,8 +60,8 @@ const getLogin = (userInfo)=> {
 						data:ress.result.data[0].token
 					})
 					uni.setStorage({
-						key: 'Name',
-						data: ress.result.data[0].nickName
+						key: 'UserId',
+						data: ress.result.data[0].userId
 					})
 					uni.showToast({
 						title:'登录成功',

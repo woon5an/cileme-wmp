@@ -5,12 +5,13 @@ const daily = db.collection('daily');
 const { verifyToken } = require('wx-common');
 
 exports.main = async (event, context) => {
-  const user = verifyToken(event.token).value;
+  // const user = verifyToken(event.token).value;
+  const userId = event.userId
   const targetMonth = event.month;
 
   // 查询该用户指定月份的数据，使用正则来匹配 exactDate 的年月
   const res_user_monthData = await daily.where({
-    openid: user,
+    userId: userId,
     exactDate: db.RegExp({
       regexp: `^${targetMonth}`, // 匹配 'YYYY-MM' 格式
       options: 'i' // 不区分大小写

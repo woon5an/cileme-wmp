@@ -10,14 +10,15 @@
       :animation="animation1"
     >
 	  <view class="head">
-	  	{{ card_date}}
+	  	{{ card_date}} 
 	  </view>
 	  <view class="content">
+			<view class="user">{{userName}}</view> 
 		    <view class="row" v-for="(item, index) in FOODLIST" :key="index">
 				<view class="label">
 					{{FOOD_MAP[item.prop].label}}
 				</view>
-				<view class="score">
+				<view class="value">
 					{{item.value}}
 				</view>
 				<view class="score">
@@ -48,11 +49,12 @@
 		  {{ card_date}}
 	    </view>
 		<view class="content">
+			<view class="user">{{userName}}</view> 
 			<view class="row" v-for="(item, index) in FOODLIST" :key="index">
 				<view class="label">
 					{{FOOD_MAP[item.prop].label}}
 				</view>
-				<view class="score">
+				<view class="value">
 					{{item.value}}
 				</view>
 				<view class="score">
@@ -85,11 +87,23 @@ onLoad((options)=> {
   const datesInfo = JSON.parse(decodeURIComponent(options.data));
   card_date.value = datesInfo.currentDate
   recordDates.value = datesInfo.dates
+  UserId.value = userList[datesInfo.user].id
+  userName.value = userList[datesInfo.user].name
   getDateData(card_date.value)
 })
-
+const userList = {
+	woon: {
+		name: 'woon',
+		id: '674b067c9fd38e63368ab1b6'
+	},
+	ma: {
+		name: '莞城文化复兴艺术家马熙茜',
+		id: '674d2684e1c3eba5d9b0248f'
+	}
+}
+const userName = ref('')
 const { proxy } = getCurrentInstance()
-
+const UserId = ref('')
 const FOODLIST = ref([])
 const card_date = ref('')
 const recordDates = ref([])
@@ -155,7 +169,7 @@ const getDateData = (date)=> {
 	wx.showLoading({
 	  title: '加载中',
 	})
-	proxy.$http('Daily', {exactDate: date}).then(res => {
+	proxy.$http('Daily', {exactDate: date, userId: UserId.value}).then(res => {
 		wx.hideLoading()
 		const code = res.result.errCode
 		if(code === 2){
@@ -438,13 +452,18 @@ const requestLike = () => {
 	width: 100%;
 	height: calc(100% - 100rpx);
 	margin-top: 100rpx;
-	padding: 40rpx 40rpx 20rpx 40rpx;
+	padding: 20rpx 40rpx 20rpx 40rpx;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	gap: 20rpx;
+	// gap: 20rpx;
 	background-color: #ffffff;
+	.user {
+		background: #fbeaed;
+		padding: 5rpx 20rpx 5rpx 20rpx; 
+		border-radius: 15rpx;
+	}
 	.row {
 		width: 100%;
 		height: 100rpx;
@@ -455,6 +474,9 @@ const requestLike = () => {
 			background: #EEA9B8;
 			padding: 10rpx;
 			border-radius: 15rpx;
+		}
+		.value {
+			width: 200rpx
 		}
 		.score {
 			

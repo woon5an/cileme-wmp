@@ -13,11 +13,9 @@
 					duration: 2000
 				})
 				// 返回登录页
-				setTimeout(() => {
-					uni.redirectTo({
-						url: '/pages/login/index'
-					})
-				}, 2000)
+				uni.redirectTo({
+					url: '/pages/login/index'
+				})
 			} else {
 				uni.switchTab({
 					url: '/pages/home/index'

@@ -1,8 +1,8 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/login/index",
-			"name": "login",
+	{
+		"path": "pages/login/index",
+		"name": "login",
 			"style": {
 				"enablePullDownRefresh": false,
 				"navigationStyle": "custom"
@@ -24,7 +24,7 @@
 				"roles": []
 			},
 			"style": {
-				"navigationBarTitleText": "TODAY",
+				"navigationBarTitleText": "今日任务",
 				"enablePullDownRefresh": true
 			}
 		},
@@ -36,7 +36,7 @@
 				"roles": []
 			},
 			"style": {
-				"navigationBarTitleText": "SUMMARY",
+				"navigationBarTitleText": "汇总",
 				"enablePullDownRefresh": true
 			}
 		},

@@ -5,7 +5,8 @@ const daily = db.collection('daily');
 const { verifyToken } = require('wx-common');
 
 exports.main = async (event, context) => {
-  const user = verifyToken(event.token).value;
+  const openId = verifyToken(event.token).value;
+  const user = event.userId;
   const today = moment().format('YYYY-MM-DD');
   const exactInfo = event.exactInfo;
   const prop = exactInfo.prop;
@@ -14,7 +15,7 @@ exports.main = async (event, context) => {
 
   // 使用 upsert 来处理插入或更新操作
   const res = await daily.where({
-    openid: user,
+    userId: user,
     exactDate: today
   }).get();
 
@@ -29,7 +30,7 @@ exports.main = async (event, context) => {
 
   // 使用 upsert（如果记录存在则更新，不存在则插入）
   const updateResult = await daily.where({
-    openid: user,
+    userId: user,
     exactDate: today
   }).update({
     [prop]: value,
@@ -39,7 +40,8 @@ exports.main = async (event, context) => {
   // 如果没有记录，则插入新记录
   if (res.data.length === 0) {
     await daily.add({
-      openid: user,
+      openid: openId,
+	  userId: user,
       [prop]: value,
       exactDate: today,
       score: updatedScore

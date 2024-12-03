@@ -5,12 +5,12 @@ const daily = db.collection('daily');
 const { verifyToken } = require('wx-common');
 
 exports.main = async (event, context) => {
-  const user = verifyToken(event.token).value;
+  const user = event.userId;
   const date = event.exactDate;
 
   // 一次性查询用户信息以及当天记录
   const res = await daily.where({
-    openid: user,
+    userId: user,
     exactDate: date
   }).field({
     breakfast: true,

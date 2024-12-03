@@ -1,9 +1,22 @@
 <template>
 	<view class="summary">
-		<view class="top" @longtap="handleLongTap">
-			LET ME SEE SEE 👀
+		<view class="top" >
+			<view class="top_title" @click="handeToogle">
+				LET ME SEE SEE 👀
+			</view>
+			<transition name="slide">
+				<view v-if="userTabOpen" class="userWrap">
+					<view class="user" :class="activeTab === 'ma' ?  'active' : ''" @click="switchUser('ma')">
+						莞城文化复兴艺术家马熙茜
+					</view>
+					<view class="user" :class="activeTab === 'woon' ?  'active' : ''" @click="switchUser('woon')">
+						woonsan
+					</view>
+				</view>
+			</transition>
 		</view>
 		
+
 
 		<view class="calendarWrap">
 			<view class="calendar-title">
@@ -32,6 +45,9 @@
 				  @select="selectDay"
 				  @unselect="unselectDay"
 				/>
+				<view v-else class="empty">
+					日历玩命加载中啦
+				</view>
 				<view class="luckRow">
 					<view class="text"  @click="getTodayLuck">
 						点我获取今日运势 👆🏻
@@ -45,7 +61,7 @@
 		</view>
 		
 		<view class="bottom">
-			<van-circle :size="120" value="rate" color="#EEA9B8" stroke-width="8">
+			<van-circle :size="120" :value="rate" color="#EEA9B8" stroke-width="8">
 				<view style="color: #EEA9B8;">
 					达标率 {{rate}}%
 				</view>
@@ -71,6 +87,21 @@ const forceRerender = () => {
 }
 
 const rate = ref(0)
+
+const userTabOpen = ref(false)
+const userList = {
+	woon: {
+		name: 'woon',
+		id: '674b067c9fd38e63368ab1b6'
+	},
+	ma: {
+		name: '莞城文化复兴艺术家马熙茜',
+		id: '674d2684e1c3eba5d9b0248f'
+	}
+}
+
+
+const activeTab = ref('ma')
 
 const monthTitle = computed(()=> {
 	const date = new Date(minDate.value)
@@ -107,14 +138,20 @@ const unselectDay = ()=> {
 	
 }
 
+const handeToogle = ()=> {
+	userTabOpen.value = !userTabOpen.value
+}
+
 const recordDates = ref([])
 const forceUpdateFlag = ref(false); // 用于强制视图更新
 const getMonthData = () => {
 	const month = moment(minDate.value).format('YYYY-MM') 
 	wx.showLoading({
+	  mask: true,
 	  title: '加载中',
 	})
-	proxy.$http('MonthRecord', { month }).then(res=> {
+	const userId = userList[activeTab.value].id
+	proxy.$http('MonthRecord', { month, userId}).then(res=> {
 		wx.hideLoading()
 		const code = res.result.errCode
 		if([0, 2].indexOf(code) !== -1){
@@ -123,18 +160,25 @@ const getMonthData = () => {
 			  icon: 'none',
 			  duration: 2000
 			})
+			showCalendar.value = true
 		} else {
 			recordDates.value = res.result.data
 			showCalendar.value = true
 			console.log(recordDates.value)
 			forceUpdateFlag.value = !forceUpdateFlag.value
-			computeRate()
+			rate.value = computeRate()
 			// forceRerender()
 			forceRerender()
 		}
 	}).catch(()=> {
 		wx.hideLoading()
 	})
+}
+
+const switchUser = (name)=> {
+	activeTab.value = name
+	showCalendar.value = false
+	getMonthData()
 }
 
 const computeRate = () => {
@@ -165,24 +209,26 @@ const handleClick = (Date)=> {
 	const date = moment(Date.detail).format('YYYY-MM-DD')
 	const params = {
 	  currentDate: date,
-	  dates: recordDates.value.map(e => e.exactDate)
-	};
+	  dates: recordDates.value.map(e => e.exactDate),
+	  user: activeTab.value
+	}
 	uni.navigateTo({
 		url: `/pages/summary/components/card/index?data=${encodeURIComponent(JSON.stringify(params))}`
 	})
 }
 
-const handleLongTap = ()=> {
-	wx.showToast({
-	  title: '这是一个没彩蛋的彩蛋~',
-	  icon: 'none',
-	  duration: 2000
-	})
-}
+// const handleLongTap = ()=> {
+// 	wx.showToast({
+// 	  title: '这是一个没彩蛋的彩蛋~',
+// 	  icon: 'none',
+// 	  duration: 2000
+// 	})
+// }
 
 const getTodayLuck = ()=> {
 	wx.showLoading({
-	  title: '加载中',
+	  mask: true,
+	  title: '加载中'
 	})
 	
 	setTimeout(function () {
@@ -203,19 +249,52 @@ const getTodayLuck = ()=> {
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
+		// align-items: center;
 		box-sizing: border-box;
 		padding: 20rpx 20rpx;
-		gap: 20rpx;
+		// gap: 20rpx;
 		background-color: #fbeaed;
 		.top{
+			background-color: #fff;
+			border-radius: 10px;
 			width: 100%;
-			height: 100rpx;
-			line-height: 100rpx;
-			text-align: center;
-			box-shadow: 2rpx 2rpx 8rpx #aaa;
-			border-radius: 20rpx;
-			background-color: #EEA9B8;
-			color: #FFFFFF;
+			display: flex;
+			flex-direction: column;
+			.top_title {
+				width: 100%;
+				height: 100rpx;
+				line-height: 100rpx;
+				text-align: center;
+				box-shadow: 2rpx 2rpx 8rpx #aaa;
+				border-radius: 20rpx;
+				background-color: #EEA9B8;
+				color: #FFFFFF;
+			}
+			.userWrap {
+				// padding: 15px 25px;
+				padding: 0rpx 40rpx;
+				margin: 0 auto;
+				height: 100rpx;
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				gap: 20rpx;
+				overflow: hidden;
+				transition: transform .8s;
+				// background-color: #FFFFFF;
+				border-bottom-left-radius: 25rpx;
+				border-bottom-right-radius: 25rpx;
+				.user {
+					background: #fafafa;
+					padding: 5rpx 10rpx;
+					border-radius: 15rpx;
+					color: #ffdc99;
+				}
+				.active {
+					background: #ffdc99;
+					color: #fafafa;
+				}
+			}
 		}
 
 		.calendarWrap {
@@ -224,6 +303,8 @@ const getTodayLuck = ()=> {
 			padding-top: 5px;
 			background-color: #FFFFFF;
 			// padding-bottom: 80px;
+			margin-top: 20rpx;
+			margin-bottom: 20rpx;
 			height: 60vh;
 			display: flex;
 			flex-direction: column;
@@ -240,6 +321,13 @@ const getTodayLuck = ()=> {
 			.calendar-content {
 				// flex:1;
 				// max-height: 280px;
+				.empty {
+					width: 100%;
+					height: 300rpx;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
 				.luckRow {
 					width: 100%;
 					box-sizing: border-box;
@@ -267,8 +355,11 @@ const getTodayLuck = ()=> {
 			display: flex;
 			justify-content: center;
 		}
+		.slide-enter,
+		.slide-leave-active {
+		  transform: translate3d(0, 100%, 0);
+		}
 	}
-
 </style>
 <style>
 	.van-calendar__month-title {
