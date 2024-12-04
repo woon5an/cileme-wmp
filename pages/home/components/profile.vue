@@ -4,12 +4,12 @@
 			✖️
 		</view>
 		<view class="userInfo">
-			<view class="avatar">
-				<image mode='aspectFill' class="circle"  src="/static/images/bobo.jpg" />
-			</view>
+			<button class="avatar" open-type="chooseAvatar" @chooseavatar="chooseAvatar">
+				<image mode='scaleToFill'  class="circle"  :src="USERINFO.avatarUrl" />
+			</button>
 			<view class="info">
 				<view class="username">
-					莞城文化复兴艺术家马熙茜
+					{{USERINFO.nickName}}
 				</view>
 				<view class="introduction">
 					这个人很懒暂时没有简介~
@@ -36,11 +36,57 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref,watch } from 'vue'
 const emit = defineEmits(['close'])
+const props = defineProps({
+	userInfo: {
+		type: Object,
+		default: () => null
+	}
+})
+const USERINFO = ref({
+	nickName: '',
+	avatarUrl: '',
+	userId: ''
+})
+watch(()=> props.userInfo, (nv)=> {
+	console.log(nv)
+	USERINFO.value = props.userInfo
+}, {
+	immediate: true,
+	deep: true
+})
 const moodValue = ref(2.5)
 const onMoodChange = (e)=> {
 	
+}
+
+const chooseAvatar = (e)=> {
+	const {
+		avatarUrl
+	} = e.detail
+	
+}
+
+const uploadAvatar = (url) => {
+	uni.showLoading({
+		title: '加载中'
+	});
+	uniCloud.uploadFile({
+		filePath: url,
+		cloudPath: `userInfo/${USERINFO.value.userId}`,
+		onUploadProgress: function(progressEvent) {
+		  console.log(progressEvent);
+		  var percentCompleted = Math.round(
+			(progressEvent.loaded * 100) / progressEvent.total
+		  );
+		},
+		success(res) {
+			console.log(res)
+		},
+		fail() {},
+		complete() {}
+	})
 }
 const handleClose = ()=> {
 	emit('close', 'id')
@@ -74,13 +120,15 @@ const handleClose = ()=> {
 		flex-direction: row;
 		justify-content: flex-start;
 		.avatar {
-			width: 100rpx;
+			width: 120rpx;
 			height: 100rpx;
 			border: 1px solid #FFF;
 			border-radius: 50%;
+			padding: 0px;
+			object-fit: cover;
 			.circle {
-				width: 100rpx; 
-				height: 100rpx;
+				width: 100%; 
+				height: 100%;
 				border-radius: 50%; /* 将图片裁剪成圆形 */
 				object-fit: cover; /* 确保图片填满圆形区域，不变形 */
 			}

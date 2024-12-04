@@ -64,6 +64,10 @@ const getLogin = (userInfo)=> {
 						key: 'UserId',
 						data: ress.result.data[0].userId
 					})
+					uni.setStorage({
+						key: 'Avatar',
+						data: ress.result.data[0].avatarUrl
+					})
 					uni.showToast({
 						title:'登录成功',
 						icon:'none',

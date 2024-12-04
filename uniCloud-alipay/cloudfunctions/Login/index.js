@@ -37,7 +37,7 @@ exports.main = async (event, context) => {
         //用户未注册存储用户信息
 		if (res_user.data && res_user.data.length === 0) {
 			user.add({
-				avatarUrl: event.userinfo.avatarUrl,
+				avatarUrl: '',
 				nickName: event.userinfo.nickName,
 				gender: event.userinfo.gender,
 				openid: wx_openid,

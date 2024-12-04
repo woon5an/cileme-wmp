@@ -1,8 +1,8 @@
 <template>
 	<view class="home" @longtap="showDialog = true">
 		<user-bar @open="handleOpen"></user-bar>
-		<Profile key="ma" v-show="showMa" @close="()=> showMa = false"></Profile>
-		<Profile key="woon" v-show="showWoon" @close="()=> showWoon = false"></Profile>
+		<Profile :userInfo="userData['ma']" key="ma" v-if="showMa" @close="()=> showMa = false"></Profile>
+		<Profile :userInfo="userData['woon']" key="woon" v-show="showWoon" @close="()=> showWoon = false"></Profile>
 		<van-dialog
 		  use-slot
 		  title="突击检查"
@@ -29,23 +29,56 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, getCurrentInstance } from "vue"
 import Profile from './components/profile.vue'
 import UserBar from './components/userBar.vue'
+const { proxy } = getCurrentInstance()
 const showDialog = ref(false)
 const showToEat = ref(false)
 const showMa = ref(false)
 const showWoon = ref(false)
+const userData = ref({
+	woon: {},
+	ma: {}
+})
+const userList = {
+	woon: {
+		name: 'woon',
+		id: '674b067c9fd38e63368ab1b6'
+	},
+	ma: {
+		name: '莞城文化复兴艺术家马熙茜',
+		id: '674d2684e1c3eba5d9b0248f'
+	}
+}
 onMounted(()=> {
 	showDialog.value = true
 })
-const handleOpen = (prop)=> {
+const handleOpen = async (prop)=> {
 	if(prop === 'ma'){
+		await getUserInfo(prop)
 		showMa.value = true
 	} else {
+		await getUserInfo(prop)
 		showWoon.value = true
 	}
 }
+
+const getUserInfo = async (prop)=> {
+	wx.showLoading({
+	  mask: true,
+	  title: '加载中',
+	})
+	const id = userList[prop].id
+	await proxy.$http('GetUserInfo', {userId: id}).then(res=> {
+		wx.hideLoading()
+		const code = res.result.errCode
+		if(code === 1){
+			userData.value[prop] = {...res.result.data}
+		}
+	})
+}
+
 const handleConfirm = () => {
 	showDialog.value = false
 	uni.showToast({
