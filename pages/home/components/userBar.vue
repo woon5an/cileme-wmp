@@ -1,19 +1,60 @@
 <template>
-	<view class="userBar">
-		<view class="avatar" @click="handleClick('ma')">
+	<view class="userBar" v-if="userList.length > 0">
+		<view class="avatar" v-for="(item, index) in userList" @click="handleClick(item.name)" :key="index">
+			<image mode='aspectFill' class="circle"  :src="item.avatarUrl" />
+		</view>
+<!-- 		<view class="avatar" @click="handleClick('ma')">
 			<image mode='aspectFill' class="circle"  src="/static/images/bobo.jpg" />
 		</view>
 		<view class="avatar" @click="handleClick('woon')">
 			<image mode='aspectFill' class="circle"  src="/static/images/bobo.jpg" />
-		</view>
+		</view> -->
+	</view>
+	<view v-else class="userBar">
+		
 	</view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
+import { onShow } from "@dcloudio/uni-app"
+const {proxy} = getCurrentInstance()
 const emit = defineEmits(['close'])
 const handleClick = (prop)=> {
 	emit('open', prop)
+}
+const userList = ref([])
+const woon = {
+	name: 'woon',
+	id: '674b067c9fd38e63368ab1b6',
+}
+const ma = {
+	name: 'ma',
+	id: '674b067c9fd38e63368ab1b6',
+}
+onShow(()=> {
+	getUserInfo()
+})
+const getUserInfo = ()=> {
+	proxy.$http('GetUserList').then(res=> {
+		const code = res.result.errCode
+		if(code === 0){
+			const data = res.result.data
+			userList.value = data.map(e=> {
+				if(e._id ===  woon.id){
+					return {
+						...e,
+						name: 'woon'
+					}
+				} else {
+					return {
+						...e,
+						name: 'ma'
+					}
+				}
+			}).reverse()
+		}
+	})
 }
 </script>
 

@@ -87,8 +87,10 @@ onLoad((options)=> {
   const datesInfo = JSON.parse(decodeURIComponent(options.data));
   card_date.value = datesInfo.currentDate
   recordDates.value = datesInfo.dates
-  UserId.value = userList[datesInfo.user].id
-  userName.value = userList[datesInfo.user].name
+  // UserId.value = userList[datesInfo.user].id
+  UserId.value = datesInfo.userId
+  // userName.value = userList[datesInfo.user].name
+  userName.value = datesInfo.userName
   getDateData(card_date.value)
 })
 const userList = {

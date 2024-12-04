@@ -2,7 +2,7 @@
 	<view class="home" @longtap="showDialog = true">
 		<user-bar @open="handleOpen"></user-bar>
 		<Profile :userInfo="userData['ma']" key="ma" v-if="showMa" @close="()=> showMa = false"></Profile>
-		<Profile :userInfo="userData['woon']" key="woon" v-show="showWoon" @close="()=> showWoon = false"></Profile>
+		<Profile :userInfo="userData['woon']" key="woon" v-if="showWoon" @close="()=> showWoon = false"></Profile>
 		<van-dialog
 		  use-slot
 		  title="突击检查"
@@ -76,6 +76,8 @@ const getUserInfo = async (prop)=> {
 		if(code === 1){
 			userData.value[prop] = {...res.result.data}
 		}
+	}).catch(()=> {
+		wx.hideLoading()
 	})
 }
 

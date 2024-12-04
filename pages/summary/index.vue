@@ -6,12 +6,15 @@
 			</view>
 			<transition name="slide">
 				<view v-if="userTabOpen" class="userWrap">
-					<view class="user" :class="activeTab === 'ma' ?  'active' : ''" @click="switchUser('ma')">
+					<view v-for="(item, index) in users" :key="index" class="user" :class="activeTab === item.name ?  'active' : ''" @click="switchUser(item.name)">
+						{{item.nickName}}
+					</view>
+<!-- 					<view class="user" :class="activeTab === 'ma' ?  'active' : ''" @click="switchUser('ma')">
 						莞城文化复兴艺术家马熙茜
 					</view>
 					<view class="user" :class="activeTab === 'woon' ?  'active' : ''" @click="switchUser('woon')">
 						woonsan
-					</view>
+					</view> -->
 				</view>
 			</transition>
 		</view>
@@ -76,7 +79,11 @@ import { ref, computed, onMounted, getCurrentInstance,nextTick, watchEffect } fr
 import moment from 'moment'
 import Toast from '../../wxcomponents/vant-weapp/toast/toast'
 import { dateUtils } from "@/utils/utils.js"
+import { onShow } from "@dcloudio/uni-app"
 const {proxy} = getCurrentInstance()
+onShow(()=> {
+	getUsers()
+})
 onMounted(()=> {
 	getMonthData()
 })
@@ -89,6 +96,15 @@ const forceRerender = () => {
 const rate = ref(0)
 
 const userTabOpen = ref(false)
+// const woon = {
+// 	name: 'woon',
+// 	id: '674b067c9fd38e63368ab1b6',
+// }
+// const ma = {
+// 	name: 'ma',
+// 	id: '674b067c9fd38e63368ab1b6',
+// }
+const users = ref([])
 const userList = {
 	woon: {
 		name: 'woon',
@@ -138,8 +154,33 @@ const unselectDay = ()=> {
 	
 }
 
-const handeToogle = ()=> {
+const handeToogle = async ()=> {
+	if(!userTabOpen.value && users.value.length === 0){
+		await getUsers()
+	}
 	userTabOpen.value = !userTabOpen.value
+}
+
+const getUsers = async ()=> {
+	proxy.$http('GetUserList').then(res=> {
+		const code = res.result.errCode
+		if(code === 0){
+			const data = res.result.data
+			users.value = data.map(e=> {
+				if(e._id ===  userList.woon.id){
+					return {
+						...e,
+						name: 'woon'
+					}
+				} else {
+					return {
+						...e,
+						name: 'ma'
+					}
+				}
+			}).reverse()
+		}
+	})
 }
 
 const recordDates = ref([])
@@ -207,10 +248,13 @@ const handleDateFormatter = (day)=> {
 }
 const handleClick = (Date)=> {
 	const date = moment(Date.detail).format('YYYY-MM-DD')
+	const user = users.value.find(e=> e.name === activeTab.value)
+	console.log(user)
 	const params = {
 	  currentDate: date,
 	  dates: recordDates.value.map(e => e.exactDate),
-	  user: activeTab.value
+	  userName: user.nickName,
+	  userId: user._id
 	}
 	uni.navigateTo({
 		url: `/pages/summary/components/card/index?data=${encodeURIComponent(JSON.stringify(params))}`

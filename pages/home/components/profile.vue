@@ -4,12 +4,13 @@
 			✖️
 		</view>
 		<view class="userInfo">
-			<button class="avatar" open-type="chooseAvatar" @chooseavatar="chooseAvatar">
+			<button class="avatar" :disabled="isDisabled" open-type="chooseAvatar" @chooseavatar="chooseAvatar">
 				<image mode='scaleToFill'  class="circle"  :src="USERINFO.avatarUrl" />
 			</button>
 			<view class="info">
 				<view class="username">
 					{{USERINFO.nickName}}
+					<view class="edit" @click="editShow=true">📝</view>
 				</view>
 				<view class="introduction">
 					这个人很懒暂时没有简介~
@@ -32,11 +33,27 @@
 			/>
 		</view>
 		<view class="bottom" @click="handleClose"></view>
+		<van-dialog
+		  use-slot
+		  :show="editShow"
+		  confirmButtonText="提交"
+		  cancelButtonText="取消"
+		  show-cancel-button
+		  custom-class="my-custom-class"
+		  confirm-button-color="#EEA9B8"
+		  @confirm="dialogInputConfirm"
+		  @cancel="handleCancel"
+		>
+			<view class="inputWrap">
+				<input class="weui-input" v-model="USERINFO.nickName"  placeholder="请输入"  />
+			</view>
+		</van-dialog>
 	</view>
 </template>
 
 <script setup>
-import { ref,watch } from 'vue'
+import { computed, onMounted, ref, watch, getCurrentInstance } from 'vue'
+const { proxy } = getCurrentInstance()
 const emit = defineEmits(['close'])
 const props = defineProps({
 	userInfo: {
@@ -44,11 +61,19 @@ const props = defineProps({
 		default: () => null
 	}
 })
+onMounted(()=> {
+	loginUserId.value = uni.getStorageSync('UserId')
+})
+const isDisabled = computed(()=> {
+	return loginUserId.value !== props.userInfo.userId
+})
 const USERINFO = ref({
 	nickName: '',
 	avatarUrl: '',
 	userId: ''
 })
+const editShow = ref(false)
+const loginUserId = ref('')
 watch(()=> props.userInfo, (nv)=> {
 	console.log(nv)
 	USERINFO.value = props.userInfo
@@ -60,12 +85,42 @@ const moodValue = ref(2.5)
 const onMoodChange = (e)=> {
 	
 }
-
+const dialogInputConfirm = async()=> {
+	uni.showLoading({
+		title: '正在修改'
+	});
+	const id = USERINFO.value.userId
+	const data = { prop: 'nickName', value: USERINFO.value.nickName}
+	await proxy.$http('UpdateUserInfo', {userInfo: data,userId: id}).then(ress=> {
+		wx.hideLoading()
+		const code = ress.result.errCode
+		if(code === 1){
+			wx.showToast({
+			  title: '修改成功',
+			  icon: 'none',
+			  duration: 1000
+			})
+		}
+		editShow.value = false
+	}).catch(()=> {
+		wx.hideLoading()
+		editShow.value = false
+		wx.showToast({
+		  title: '修改失败',
+		  icon: 'none',
+		  duration: 1000
+		})
+	})
+}
+const handleCancel = ()=> {
+	editShow.value = false
+}
 const chooseAvatar = (e)=> {
 	const {
 		avatarUrl
 	} = e.detail
-	
+	USERINFO.value.avatarUrl = avatarUrl
+	uploadAvatar((avatarUrl))
 }
 
 const uploadAvatar = (url) => {
@@ -81,8 +136,23 @@ const uploadAvatar = (url) => {
 			(progressEvent.loaded * 100) / progressEvent.total
 		  );
 		},
-		success(res) {
+		async success(res) {
 			console.log(res)
+			wx.showLoading({
+			  mask: true,
+			  title: '加载中',
+			})
+			const id = USERINFO.value.userId
+			const data = { prop: 'fileID', value: res.fileID}
+			await proxy.$http('UpdateUserInfo', {userInfo: data,userId: id}).then(ress=> {
+				wx.hideLoading()
+				const code = ress.result.errCode
+				if(code === 1){
+					USERINFO.value['avatarUrl'] = ress.result.data.avatarUrl
+				}
+			}).catch(()=> {
+				wx.hideLoading()
+			})
 		},
 		fail() {},
 		complete() {}
@@ -94,6 +164,21 @@ const handleClose = ()=> {
 </script>
 
 <style lang="scss" scoped>
+.inputWrap {
+	width: 100%;
+	height: 150rpx;
+	line-height: 150rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	.weui-input {
+		width: 500rpx;
+		height: 70rpx;
+		border-radius: 10rpx;
+		border: 1px solid #eee;
+		padding-left: 20rpx;
+	}
+}
 .profileWrap {
 	position: relative;
 	width: 100%;
@@ -145,6 +230,12 @@ const handleClose = ()=> {
 			.username{
 				font-family: PingFang SC, PingFang SC-Bold; 
 				font-weight: 600;
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				.edit{
+					margin-left: 5rpx;
+				}
 			}
 			.introduction {
 				font-size: 12px;
