@@ -1,16 +1,16 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-	{
-		"path": "pages/login/index",
-		"name": "login",
+		{
+			"path": "pages/home/index",
+			"name": "home",
 			"style": {
 				"enablePullDownRefresh": false,
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path": "pages/home/index",
-			"name": "home",
+			"path": "pages/login/index",
+			"name": "login",
 			"style": {
 				"enablePullDownRefresh": false,
 				"navigationStyle": "custom"
@@ -86,7 +86,8 @@
 			"van-notify": "/wxcomponents/vant-weapp/notify/index",
 			"van-empty": "/wxcomponents/vant-weapp/empty/index",
 			"van-search": "/wxcomponents/vant-weapp/search/index",
-			"van-slider": "/wxcomponents/vant-weapp/slider/index"
+			"van-slider": "/wxcomponents/vant-weapp/slider/index",
+			"van-rate": "/wxcomponents/vant-weapp/rate/index"
 		},
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",

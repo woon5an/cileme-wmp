@@ -21,6 +21,7 @@ const getUserInfo = ()=> {
 					desc:'获取用户信息，进行登录',
 					success: (res) => {
 						//调用登录函数
+						console.log(res)
 						getLogin(res.userInfo)
 					}
 				})

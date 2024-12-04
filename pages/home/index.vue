@@ -1,5 +1,8 @@
 <template>
 	<view class="home" @longtap="showDialog = true">
+		<user-bar @open="handleOpen"></user-bar>
+		<Profile key="ma" v-show="showMa" @close="()=> showMa = false"></Profile>
+		<Profile key="woon" v-show="showWoon" @close="()=> showWoon = false"></Profile>
 		<van-dialog
 		  use-slot
 		  title="突击检查"
@@ -27,11 +30,22 @@
 
 <script setup>
 import { ref, onMounted } from "vue"
+import Profile from './components/profile.vue'
+import UserBar from './components/userBar.vue'
 const showDialog = ref(false)
 const showToEat = ref(false)
+const showMa = ref(false)
+const showWoon = ref(false)
 onMounted(()=> {
 	showDialog.value = true
 })
+const handleOpen = (prop)=> {
+	if(prop === 'ma'){
+		showMa.value = true
+	} else {
+		showWoon.value = true
+	}
+}
 const handleConfirm = () => {
 	showDialog.value = false
 	uni.showToast({
@@ -61,7 +75,8 @@ const resetShow = () => {
 	height: 100vh;
 	display: flex;
 	flex-direction:column;
-	justify-content:flex-end;
+	justify-content:flex-start;
+	padding: env(safe-area-inset-top) 20rpx env(safe-area-inset-bottom) 20rpx;
 }
 .home:before{
 	background-image:$login-bg;
