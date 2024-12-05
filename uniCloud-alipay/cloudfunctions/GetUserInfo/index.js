@@ -9,13 +9,15 @@ exports.main = async (event, context) => {
 	}).field({
 		userId: true,
 		avatarUrl: true,
-		nickName: true
+		nickName: true,
+		introduction: true
 	  }).get()
 	console.log(res)
 	const res_ = {
 		userId: res.data[0]._id,
 		avatarUrl: res.data[0].avatarUrl,
-		nickName: res.data[0].nickName
+		nickName: res.data[0].nickName,
+		introduction: res.data[0].introduction
 	}
 	//返回数据给客户端
 	return {

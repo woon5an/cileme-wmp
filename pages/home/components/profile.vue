@@ -10,10 +10,10 @@
 			<view class="info">
 				<view class="username">
 					{{USERINFO.nickName}}
-					<view class="edit" @click="editShow=true">📝</view>
+					<view class="edit" @click="editNameShow=true">📝</view>
 				</view>
-				<view class="introduction">
-					这个人很懒暂时没有简介~
+				<view class="introduction" @longtap.stop="handleLongTap">
+					{{!USERINFO.introduction ? '这个人很懒暂时没有简介~' : USERINFO.introduction}}
 				</view>
 			</view>
 		</view>
@@ -35,17 +35,32 @@
 		<view class="bottom" @click="handleClose"></view>
 		<van-dialog
 		  use-slot
-		  :show="editShow"
+		  :show="editNameShow"
 		  confirmButtonText="提交"
 		  cancelButtonText="取消"
 		  show-cancel-button
 		  custom-class="my-custom-class"
 		  confirm-button-color="#EEA9B8"
-		  @confirm="dialogInputConfirm"
-		  @cancel="handleCancel"
+		  @confirm="confirmEditName"
+		  @cancel="handleCancelEditName"
 		>
 			<view class="inputWrap">
 				<input class="weui-input" v-model="USERINFO.nickName"  placeholder="请输入"  />
+			</view>
+		</van-dialog>
+		<van-dialog
+		  use-slot
+		  :show="editIntroShow"
+		  confirmButtonText="提交"
+		  cancelButtonText="取消"
+		  show-cancel-button
+		  custom-class="my-custom-class"
+		  confirm-button-color="#EEA9B8"
+		  @confirm="confirmEditIntro"
+		  @cancel="handleCancelEditIntro"
+		>
+			<view class="inputWrap">
+				<input class="weui-input" v-model="USERINFO.introduction"  placeholder="请输入"  />
 			</view>
 		</van-dialog>
 	</view>
@@ -70,9 +85,13 @@ const isDisabled = computed(()=> {
 const USERINFO = ref({
 	nickName: '',
 	avatarUrl: '',
-	userId: ''
+	userId: '',
+	introduction: ''
 })
-const editShow = ref(false)
+//显示编辑名称
+const editNameShow = ref(false)
+//显示编辑个人简介
+const editIntroShow = ref(false)
 const loginUserId = ref('')
 watch(()=> props.userInfo, (nv)=> {
 	USERINFO.value = props.userInfo
@@ -84,7 +103,7 @@ const moodValue = ref(2.5)
 const onMoodChange = (e)=> {
 	
 }
-const dialogInputConfirm = async()=> {
+const confirmEditName = async()=> {
 	uni.showLoading({
 		title: '正在修改'
 	})
@@ -100,10 +119,10 @@ const dialogInputConfirm = async()=> {
 			  duration: 1000
 			})
 		}
-		editShow.value = false
+		editNameShow.value = false
 	}).catch(()=> {
 		wx.hideLoading()
-		editShow.value = false
+		editNameShow.value = false
 		wx.showToast({
 		  title: '修改失败',
 		  icon: 'none',
@@ -111,9 +130,49 @@ const dialogInputConfirm = async()=> {
 		})
 	})
 }
-const handleCancel = ()=> {
-	editShow.value = false
+
+const handleCancelEditName = ()=> {
+	editNameShow.value = false
 }
+
+const handleLongTap = (event) => {
+	// 阻止事件冒泡
+	event.stopPropagation()
+	editIntroShow.value = true
+}
+
+const confirmEditIntro = async()=> {
+	uni.showLoading({
+		title: '正在修改'
+	})
+	const id = USERINFO.value.userId
+	const data = { prop: 'introduction', value: USERINFO.value.introduction}
+	await proxy.$http('UpdateUserInfo', {userInfo: data,userId: id}).then(ress=> {
+		wx.hideLoading()
+		const code = ress.result.errCode
+		if(code === 1){
+			wx.showToast({
+			  title: '修改成功',
+			  icon: 'none',
+			  duration: 1000
+			})
+		}
+		editIntroShow.value = false
+	}).catch(()=> {
+		wx.hideLoading()
+		editIntroShow.value = false
+		wx.showToast({
+		  title: '修改失败',
+		  icon: 'none',
+		  duration: 1000
+		})
+	})
+}
+
+const handleCancelEditIntro = ()=> {
+	editIntroShow.value = false
+}
+
 const chooseAvatar = (e)=> {
 	console.log(e)
 	const {

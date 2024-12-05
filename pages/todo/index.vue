@@ -93,7 +93,6 @@ const getTodayData = ()=> {
 			const finishedList = []
 			const data = res.result.data
 			for(const prop of FOOD_ARR){
-				console.log(prop)
 				if(data[prop] !== '' && data[prop] !== null){
 					finishedList.push(prop)
 				} else {

@@ -205,7 +205,6 @@ const getMonthData = () => {
 		} else {
 			recordDates.value = res.result.data
 			showCalendar.value = true
-			console.log(recordDates.value)
 			forceUpdateFlag.value = !forceUpdateFlag.value
 			rate.value = computeRate()
 			// forceRerender()
