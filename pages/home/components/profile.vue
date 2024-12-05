@@ -75,7 +75,6 @@ const USERINFO = ref({
 const editShow = ref(false)
 const loginUserId = ref('')
 watch(()=> props.userInfo, (nv)=> {
-	console.log(nv)
 	USERINFO.value = props.userInfo
 }, {
 	immediate: true,
@@ -88,7 +87,7 @@ const onMoodChange = (e)=> {
 const dialogInputConfirm = async()=> {
 	uni.showLoading({
 		title: '正在修改'
-	});
+	})
 	const id = USERINFO.value.userId
 	const data = { prop: 'nickName', value: USERINFO.value.nickName}
 	await proxy.$http('UpdateUserInfo', {userInfo: data,userId: id}).then(ress=> {
@@ -116,6 +115,7 @@ const handleCancel = ()=> {
 	editShow.value = false
 }
 const chooseAvatar = (e)=> {
+	console.log(e)
 	const {
 		avatarUrl
 	} = e.detail
@@ -129,13 +129,8 @@ const uploadAvatar = (url) => {
 	});
 	uniCloud.uploadFile({
 		filePath: url,
-		cloudPath: `userInfo/${USERINFO.value.userId}`,
-		onUploadProgress: function(progressEvent) {
-		  console.log(progressEvent);
-		  var percentCompleted = Math.round(
-			(progressEvent.loaded * 100) / progressEvent.total
-		  );
-		},
+		cloudPath: `userInfo/${USERINFO.value.userId}.png`,
+		fileType: 'image',
 		async success(res) {
 			console.log(res)
 			wx.showLoading({

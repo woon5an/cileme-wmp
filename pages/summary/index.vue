@@ -322,6 +322,7 @@ const getTodayLuck = ()=> {
 				display: flex;
 				justify-content: flex-start;
 				align-items: center;
+				flex-wrap: wrap;
 				gap: 20rpx;
 				overflow: hidden;
 				transition: transform .8s;

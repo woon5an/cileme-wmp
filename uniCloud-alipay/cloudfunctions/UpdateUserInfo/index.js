@@ -10,16 +10,14 @@ exports.main = async (event, context) => {
 		const result = await uniCloud.getTempFileURL({
 			fileList: [value]
 		})
+		console.log(result)
 		prop = 'avatarUrl',
 		value = result.fileList[0].tempFileURL
-	}
-	// 使用 upsert 来处理插入或更新操作
-	const res = await user.where({
-	  _id: userId
-	}).update({
-		[prop]: value
-	})
-	if(prop === 'avatarUrl'){
+		const res = await user.where({
+		  _id: userId
+		}).update({
+			[prop]: value
+		})
 		return {
 		  errCode: 1,
 		  msg: '成功~',
@@ -28,7 +26,11 @@ exports.main = async (event, context) => {
 		  }
 		}
 	} else {
-		//返回数据给客户端
+		const res = await user.where({
+		  _id: userId
+		}).update({
+			[prop]: value
+		})
 		return {
 		  errCode: 1,
 		  msg: '成功~',
