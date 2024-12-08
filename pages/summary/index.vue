@@ -241,7 +241,7 @@ const handleDateFormatter = (day)=> {
 	} else if(match.pass){
 		day.bottomInfo = '✅'
 		if('mood' in match){
-			day.topInfo = match.mood === 0 ? '😫' : (match.mood > 2.5 ? '😊' : '😐')
+			day.topInfo = match.mood === 0 ? '😞' : (match.mood < 2 ? '😨' : (match.mood > 3 ? '😊' : '😐'))
 		}
 
 	} else {
