@@ -11,7 +11,7 @@ exports.main = async (event, context) => {
   const exactInfo = event.exactInfo;
   const prop = exactInfo.prop;
   const value = exactInfo.value;
-  const score = exactInfo.score;
+  const score = exactInfo.score || 0;
 
   // 使用 upsert 来处理插入或更新操作
   const res = await daily.where({

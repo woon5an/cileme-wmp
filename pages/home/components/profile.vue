@@ -22,7 +22,7 @@
 				你今天开心吗？
 			</view>
 			<van-rate
-			  :value="moodValue"
+			  :value="USERINFO.mood"
 			  size="25"
 			  allow-half
 			  color="#EEA9B8"
@@ -86,7 +86,8 @@ const USERINFO = ref({
 	nickName: '',
 	avatarUrl: '',
 	userId: '',
-	introduction: ''
+	introduction: '',
+	mood: 2.5
 })
 //显示编辑名称
 const editNameShow = ref(false)
@@ -100,8 +101,49 @@ watch(()=> props.userInfo, (nv)=> {
 	deep: true
 })
 const moodValue = ref(2.5)
+
+const _debounce = (func, wait=300)=> {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait)
+  }
+}
+const submitMood = async()=> {
+	const exactInfo = {
+		prop: 'mood',
+		value: moodValue.value
+	}
+	wx.showLoading({
+	  mask: true,
+	  title: '记录中',
+	})
+	const id = USERINFO.value.userId
+	proxy.$http('ReportFood', {exactInfo, userId: id}).then(res=> {
+		wx.hideLoading()
+		const code = res.result.errCode
+		if(code === 1){
+			wx.showToast({
+			  title: 'okok',
+			  icon: 'success',
+			  duration: 2000
+			})
+		} else {
+			wx.showToast({
+			  title: '好像出了点问题',
+			  icon: 'error',
+			  duration: 2000
+			})
+		}
+	})
+}
+// 包装后的防抖函数
+const debouncedSubmitMood = _debounce(submitMood, 300)
 const onMoodChange = (e)=> {
-	
+	let mood = e.detail
+	moodValue.value = mood
+	debouncedSubmitMood(mood)
 }
 const confirmEditName = async()=> {
 	uni.showLoading({

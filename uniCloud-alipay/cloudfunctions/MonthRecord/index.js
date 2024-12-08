@@ -27,11 +27,16 @@ exports.main = async (event, context) => {
     };
   }
 
+  const hasAtLeastOneKeyWithValue = (obj)=> {
+	  const keys = ['breakfast', 'lunch', 'dinner', 'snack', 'cake'];
+	  return keys.some(key => obj[key] !== undefined && obj[key] !== null);
+	}
   // 构造符合要求的数组，使用 map 来直接返回最终结果
   const result = res_user_monthData.data.map(item => ({
-    record: true,  // 记录存在
+	mood: 'mood' in item ? item.mood : 2.5,
+    record: hasAtLeastOneKeyWithValue(item),  // 记录存在
     exactDate: item.exactDate,  // 日期
-    pass: item.score >= 60  // 判断 score 是否 >= 60
+    pass: item.score ? item.score >= 60 : false // 判断 score 是否 >= 60
   }));
 
   return {

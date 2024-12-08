@@ -234,12 +234,16 @@ const handleDateFormatter = (day)=> {
 	}
 	//在ticketDates有票日期里查找是否包含该天
 	const match = recordDates.value.find(e => {
-		return e.exactDate === dateStr
+		return e.exactDate === dateStr && e.record
 	})
 	if(!match){
 		day.type = 'disabled'
 	} else if(match.pass){
 		day.bottomInfo = '✅'
+		if('mood' in match){
+			day.topInfo = match.mood === 0 ? '😫' : (match.mood > 2.5 ? '😊' : '😐')
+		}
+
 	} else {
 		day.bottomInfo = '❌'
 	}
@@ -417,5 +421,11 @@ const getTodayLuck = ()=> {
 		color: #0DDBA4;
 		word-break: break-all;
 	}
-
+	.calendarWrap .van-calendar__top-info {
+		margin: 0 auto;
+		top: 5rpx !important;
+		font-size: 8px;
+		color: #0DDBA4;
+		word-break: break-all;
+	}
 </style>
