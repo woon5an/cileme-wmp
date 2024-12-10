@@ -10,7 +10,7 @@
       :animation="animation1"
     >
 	  <view class="head">
-	  	{{ card_date}} 
+	  	{{ card_date}} {{dateMood}}
 	  </view>
 	  <view class="content">
 			<view class="user">{{userName}}</view> 
@@ -46,7 +46,7 @@
       :animation="animation2"
     >
 	    <view class="head">
-		  {{ card_date}}
+		  {{ card_date}} {{dateMood}}
 	    </view>
 		<view class="content">
 			<view class="user">{{userName}}</view> 
@@ -103,11 +103,12 @@ const userList = {
 		id: '674d2684e1c3eba5d9b0248f'
 	}
 }
-const userName = ref('')
+const userName = ref('😐')
 const { proxy } = getCurrentInstance()
 const UserId = ref('')
 const FOODLIST = ref([])
 const card_date = ref('')
+const dateMood = ref('')
 const recordDates = ref([])
 const marginHori = 74
 const marginVerti = 100
@@ -183,6 +184,7 @@ const getDateData = (date)=> {
 		} else {
 			const finishedList = []
 			const data = res.result.data
+			const mood = data.mood
 			for(const prop of FOOD_ARR){
 				if(data[prop] !== '' && data[prop] !== null){
 					finishedList.push({
@@ -192,6 +194,7 @@ const getDateData = (date)=> {
 				} 
 			}
 			FOODLIST.value = finishedList
+			dateMood.value = mood === 0 ? '😞' : (mood < 2 ? '😨' : (mood > 3 ? '😊' : '😐'))
 		}
 	}).catch(()=> {
 		wx.hideLoading()

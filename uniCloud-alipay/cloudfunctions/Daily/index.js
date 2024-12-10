@@ -17,19 +17,22 @@ exports.main = async (event, context) => {
     lunch: true,
     dinner: true,
     snack: true,
-    cake: true
+    cake: true,
+	fruit: true,
+	mood: true
   }).get();
 
   if (res.data && res.data.length > 0) {
     const dayInfo = res.data[0];
-
+	//设置默认心情
+	if(dayInfo.mood === null) dayInfo.mood = 2.5
     // 直接处理缺失的字段，避免后续处理
-    const fields = ['breakfast', 'lunch', 'dinner', 'snack', 'cake'];
+    const fields = ['breakfast', 'lunch', 'dinner', 'snack', 'cake', 'fruit', 'mood'];
     fields.forEach(field => {
       if (!dayInfo.hasOwnProperty(field)) {
-        dayInfo[field] = '';  // 设置为空字符串
+		dayInfo[field] = '';  // 设置为空字符串
       }
-    });
+    })
 
     return {
       errCode: 1,

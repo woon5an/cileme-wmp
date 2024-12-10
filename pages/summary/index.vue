@@ -64,7 +64,7 @@
 		</view>
 		
 		<view class="bottom">
-			<van-circle :size="120" :value="rate" color="#EEA9B8" stroke-width="8">
+			<van-circle :size="130" :value="rate" color="#EEA9B8" stroke-width="8">
 				<view style="color: #EEA9B8;">
 					达标率 {{rate}}%
 				</view>
@@ -224,7 +224,7 @@ const switchUser = (name)=> {
 const computeRate = () => {
 	const monthDays = moment(minDate.value).daysInMonth()
 	const passDays = recordDates.value.filter(e=> e.pass).length
-	return  passDays === 0 ? 0 : (passDays / monthDays).toFixed(2) * 100
+	return  passDays === 0 ? 0 : Number(passDays / monthDays  * 100).toFixed(2)
 }
 
 const handleDateFormatter = (day)=> {
@@ -243,9 +243,11 @@ const handleDateFormatter = (day)=> {
 		if('mood' in match){
 			day.topInfo = match.mood === 0 ? '😞' : (match.mood < 2 ? '😨' : (match.mood > 3 ? '😊' : '😐'))
 		}
-
 	} else {
 		day.bottomInfo = '❌'
+		if('mood' in match){
+			day.topInfo = match.mood === 0 ? '😞' : (match.mood < 2 ? '😨' : (match.mood > 3 ? '😊' : '😐'))
+		}
 	}
 	return day
 }
@@ -255,7 +257,7 @@ const handleClick = (Date)=> {
 	console.log(user)
 	const params = {
 	  currentDate: date,
-	  dates: recordDates.value.map(e => e.exactDate),
+	  dates: recordDates.value.filter(e=> e.record).map(e => e.exactDate),
 	  userName: user.nickName,
 	  userId: user._id
 	}

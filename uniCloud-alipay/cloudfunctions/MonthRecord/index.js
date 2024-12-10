@@ -28,7 +28,7 @@ exports.main = async (event, context) => {
   }
 
   const hasAtLeastOneKeyWithValue = (obj)=> {
-	  const keys = ['breakfast', 'lunch', 'dinner', 'snack', 'cake'];
+	  const keys = ['breakfast', 'lunch', 'dinner', 'snack', 'cake', 'fruit'];
 	  return keys.some(key => obj[key] !== undefined && obj[key] !== null);
 	}
   // 构造符合要求的数组，使用 map 来直接返回最终结果
